@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react';
 
 import { Patient } from '../types';
 import { apiBaseUrl } from '../constants';
-import { useStateValue } from '../state';
+import { useStateValue, showSinglePatient } from '../state';
 
 const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
@@ -16,7 +16,7 @@ const SinglePatientPage = () => {
       const { data: singlePatientData } = await axios.get<Patient>(
         `${apiBaseUrl}/patients/${id}`
       );
-      dispatch({ type: 'SHOW_CURRENT_PATIENT', payload: singlePatientData });
+      dispatch(showSinglePatient(singlePatientData));
     } catch (e) {
       console.error(e);
     }
