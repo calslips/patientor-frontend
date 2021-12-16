@@ -9,6 +9,7 @@ import { useStateValue, showSinglePatient } from '../state';
 
 const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
+  const [{diagnoses}] = useStateValue();
   const { id } = useParams<{ id: string }>();
 
   const getSinglePatientData = async () => {
@@ -45,7 +46,9 @@ const SinglePatientPage = () => {
             <List.Item>{entry.date} <em>{entry.description}</em>
             <List bulleted>
               {entry.diagnosisCodes?.map(code => (
-                <List.Item key={code}>{code}</List.Item>
+                <List.Item key={code}>
+                  {code} {diagnoses[code].name}
+                </List.Item>
               ))}
             </List>
             </List.Item>
