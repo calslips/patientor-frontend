@@ -1,15 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Icon, List } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 import { Patient } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, showSinglePatient } from '../state';
 
+import EntryDetails from '../components/EntryDetails';
+
 const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
-  const [{diagnoses}] = useStateValue();
   const { id } = useParams<{ id: string }>();
 
   const getSinglePatientData = async () => {
@@ -41,19 +42,7 @@ const SinglePatientPage = () => {
       <p>occupation: {currentPatient?.occupation}</p>
       <h3>entries</h3>
       {currentPatient?.entries.map(entry => (
-        <div key={entry.id}>
-          <List>
-            <List.Item>{entry.date} <em>{entry.description}</em>
-            <List bulleted>
-              {entry.diagnosisCodes?.map(code => (
-                <List.Item key={code}>
-                  {code} {diagnoses[code].name}
-                </List.Item>
-              ))}
-            </List>
-            </List.Item>
-          </List>
-        </div>
+        <EntryDetails key={entry.id} entry={entry} />
       ))}
     </div>
   );
