@@ -1,17 +1,24 @@
 import React from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Button } from 'semantic-ui-react';
 
 import { Patient } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, showSinglePatient } from '../state';
-
 import EntryDetails from '../components/EntryDetails';
+import AddEntryModal from '../AddEntryModal';
 
 const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+  };
 
   const getSinglePatientData = async () => {
     try {
@@ -44,6 +51,12 @@ const SinglePatientPage = () => {
       {currentPatient?.entries.map(entry => (
         <EntryDetails key={entry.id} entry={entry} />
       ))}
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={() => openModal()}
+        onClose={closeModal}
+      />
+      <Button onClick={() => openModal()}>Add New Entry</Button>
     </div>
   );
 
