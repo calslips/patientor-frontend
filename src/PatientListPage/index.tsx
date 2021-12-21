@@ -38,8 +38,10 @@ const PatientListPage = () => {
       dispatch(addPatient(newPatient));
       closeModal();
     } catch (e) {
-      console.error(e.response?.data || 'Unknown Error');
-      setError(e.response?.data?.error || 'Unknown error');
+      const errorMessage = e.response?.data as string;
+
+      console.error(errorMessage || 'Unknown Error');
+      setError(errorMessage || 'Unknown Error');
     }
   };
 
