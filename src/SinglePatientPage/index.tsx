@@ -14,11 +14,13 @@ const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
   const { id } = useParams<{ id: string }>();
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
 
   const openModal = (): void => setModalOpen(true);
 
   const closeModal = (): void => {
     setModalOpen(false);
+    setError(undefined);
   };
 
   const getSinglePatientData = async () => {
@@ -45,7 +47,10 @@ const SinglePatientPage = () => {
       dispatch(addEntry([newEntry, id]));
       closeModal();
     } catch (e) {
-      console.error(e || 'Unknown error');
+      const errorMessage = e.response?.data as string;
+
+      console.error(errorMessage || 'Unknown Error');
+      setError(errorMessage || 'Unknown Error');
     }
   };
 
@@ -69,6 +74,7 @@ const SinglePatientPage = () => {
         modalOpen={modalOpen}
         onSubmit={addNewEntry}
         onClose={closeModal}
+        error={error}
       />
       <Button onClick={() => openModal()}>Add New Entry</Button>
     </div>
