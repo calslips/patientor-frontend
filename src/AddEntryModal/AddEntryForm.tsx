@@ -7,12 +7,14 @@ import {
   NumberField,
   DiagnosisSelection,
   EntryTypeOption,
-  SelectEntryType
+  SelectEntryType,
 } from '../AddPatientModal/FormField';
 import { useStateValue } from '../state';
-import { HealthCheckEntry, EntryType, HealthCheckRating } from '../types';
-
-export type EntryFormValues = Omit<HealthCheckEntry, 'id'>;
+import {
+  EntryType,
+  HealthCheckRating,
+  NewEntry as EntryFormValues,
+} from '../types';
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
@@ -36,7 +38,12 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
         specialist: '',
         diagnosisCodes: [''],
         type: EntryType.HealthCheck,
-        healthCheckRating: HealthCheckRating.Healthy
+        healthCheckRating: HealthCheckRating.Healthy,
+        employerName: '',
+        sickLeave: {
+          startDate: '',
+          endDate: ''
+        }
       } as EntryFormValues}
       onSubmit={onSubmit}
       validate={values => {
@@ -51,19 +58,19 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
         if (!values.specialist) {
           errors.specialist = requiredError;
         }
-        if (!values.diagnosisCodes) {
-          errors.diagnosisCodes = requiredError;
-        }
         if (!values.type) {
           errors.type = requiredError;
         }
-        if (!values.healthCheckRating) {
+        if (values.type === 'HealthCheck' && !values.healthCheckRating) {
           errors.healthCheckRating = requiredError;
+        }
+        if (values.type === 'OccupationalHealthcare' && !values.employerName) {
+          errors.employerName = requiredError;
         }
         return errors;
       }}
     >
-      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+      {({ isValid, dirty, setFieldValue, setFieldTouched, values }) => {
         return (
           <Form className='form ui'>
             <SelectEntryType
@@ -94,13 +101,37 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
               setFieldTouched={setFieldTouched}
               diagnoses={Object.values(diagnoses)}
             />
-            <Field
-              label='healthCheckRating'
-              name='healthCheckRating'
-              component={NumberField}
-              min={0}
-              max={3}
-            />
+            {values.type === 'HealthCheck'
+              ?
+                <Field
+                  label='Health Check Rating'
+                  name='healthCheckRating'
+                  component={NumberField}
+                  min={0}
+                  max={3}
+                />
+              :
+                <>
+                  <Field
+                    label='Employer Name'
+                    placeholder='Employer Name'
+                    name='employerName'
+                    component={TextField}
+                  />
+                  <Field
+                    label='Sick Leave Start Date'
+                    placeholder='YYYY-MM-DD'
+                    name='sickLeave.startDate'
+                    component={TextField}
+                  />
+                  <Field
+                    label='Sick Leave End Date'
+                    placeholder='YYYY-MM-DD'
+                    name='sickLeave.endDate'
+                    component={TextField}
+                  />
+                </>
+            }
             <Grid>
               <Grid.Column floated='left' width={5}>
                 <Button type='button' onClick={onCancel} color='red'>

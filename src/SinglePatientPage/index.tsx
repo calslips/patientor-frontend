@@ -3,12 +3,11 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Icon, Button } from 'semantic-ui-react';
 
-import { Patient, Entry } from '../types';
+import { Patient, Entry, NewEntry as EntryFormValues } from '../types';
 import { apiBaseUrl } from '../constants';
 import { useStateValue, showSinglePatient, addEntry } from '../state';
 import EntryDetails from '../components/EntryDetails';
 import AddEntryModal from '../AddEntryModal';
-import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 
 const SinglePatientPage = () => {
   const [{currentPatient}, dispatch] = useStateValue();
