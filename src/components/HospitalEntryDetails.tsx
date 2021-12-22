@@ -15,9 +15,11 @@ const HospitalEntryDetails: React.FC<{ entry: HospitalEntry }> = ({ entry }) => 
         <List.Item><em>{entry.description}</em>
         <List bulleted>
           {entry.diagnosisCodes?.map(code =>
-            <List.Item key={code}>
-              {code} {diagnoses[code].name}
-            </List.Item>
+            code
+            ? <List.Item key={code}>
+                {code} {diagnoses[code].name}
+              </List.Item>
+            : null
           )}
         </List>
         </List.Item>
