@@ -21,6 +21,18 @@ interface Props {
   onCancel: () => void;
 }
 
+type ValidateDischarge =
+  | {
+      date: string,
+      criteria: string
+    }
+  | {
+      date: string
+    }
+  | {
+      criteria: string
+    };
+
 const entryTypeOptions: EntryTypeOption[] = [
   { value: EntryType.HealthCheck },
   { value: EntryType.OccupationalHealthcare },
@@ -43,12 +55,16 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
         sickLeave: {
           startDate: '',
           endDate: ''
+        },
+        discharge: {
+          date: '',
+          criteria: ''
         }
       } as EntryFormValues}
       onSubmit={onSubmit}
       validate={values => {
         const requiredError = 'Field is required';
-        const errors: { [field: string]: string } = {};
+        const errors: { [field: string]: string | ValidateDischarge} = {};
         if (!values.description) {
           errors.description = requiredError;
         }
@@ -66,6 +82,22 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
         }
         if (values.type === 'OccupationalHealthcare' && !values.employerName) {
           errors.employerName = requiredError;
+        }
+        if (values.type === 'Hospital') {
+          if (!(values.discharge.date || values.discharge.criteria)) {
+            errors.discharge = {
+              date: requiredError,
+              criteria: requiredError
+            };
+          } else if (!(values.discharge.date)) {
+            errors.discharge = {
+              date: requiredError
+            };
+          } else if (!(values.discharge.criteria)) {
+            errors.discharge = {
+              criteria: requiredError
+            };
+          }
         }
         return errors;
       }}
@@ -111,26 +143,43 @@ export const AddEntryForm = ({ onSubmit, onCancel}: Props) => {
                   max={3}
                 />
               :
-                <>
-                  <Field
-                    label='Employer Name'
-                    placeholder='Employer Name'
-                    name='employerName'
-                    component={TextField}
-                  />
-                  <Field
-                    label='Sick Leave Start Date'
-                    placeholder='YYYY-MM-DD'
-                    name='sickLeave.startDate'
-                    component={TextField}
-                  />
-                  <Field
-                    label='Sick Leave End Date'
-                    placeholder='YYYY-MM-DD'
-                    name='sickLeave.endDate'
-                    component={TextField}
-                  />
-                </>
+                values.type === 'OccupationalHealthcare'
+                  ?
+                    <>
+                      <Field
+                        label='Employer Name'
+                        placeholder='Employer Name'
+                        name='employerName'
+                        component={TextField}
+                      />
+                      <Field
+                        label='Sick Leave Start Date'
+                        placeholder='YYYY-MM-DD'
+                        name='sickLeave.startDate'
+                        component={TextField}
+                      />
+                      <Field
+                        label='Sick Leave End Date'
+                        placeholder='YYYY-MM-DD'
+                        name='sickLeave.endDate'
+                        component={TextField}
+                      />
+                    </>
+                  :  // return fields for entry type Hospital
+                    <>
+                      <Field
+                        label='Discharge Date'
+                        placeholder='YYYY-MM-DD'
+                        name='discharge.date'
+                        component={TextField}
+                      />
+                      <Field
+                        label='Discharge Criteria'
+                        placeholder='Discharge Criteria'
+                        name='discharge.criteria'
+                        component={TextField}
+                      />
+                    </>
             }
             <Grid>
               <Grid.Column floated='left' width={5}>
